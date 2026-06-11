@@ -2,216 +2,120 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>WasteWise 2026 - Khulna City Smart Waste Management</title>
-    
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Leaflet Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Splash Screen -->
-    <div class="splash-screen" id="splash">
-        <div class="splash-content">
-            <i class="fas fa-recycle splash-icon"></i>
-            <h1 class="splash-title">WasteWise 2026</h1>
-            <p class="splash-subtitle">Khulna City Smart Waste Management</p>
-            <div class="loader"></div>
-        </div>
+
+<div class="splash-screen" id="splash">
+    <div class="splash-content">
+        <i class="fas fa-recycle splash-icon"></i>
+        <h1 class="splash-title">WasteWise 2026</h1>
+        <p class="splash-subtitle">Khulna City Smart Waste Management | ESP32 IoT + YOLO AI</p>
+        <div class="loader"></div>
     </div>
+</div>
 
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-recycle modal-logo"></i>
-                <h2>Welcome Back!</h2>
-                <p>Sign in to continue to WasteWise</p>
-            </div>
-            
-            <form id="loginForm">
-                <div class="input-group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="loginEmail" placeholder="Email address" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="loginPassword" placeholder="Password" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-user-tag input-icon"></i>
-                    <select id="loginType" required>
-                        <option value="">Select user type</option>
-                        <option value="citizen">Citizen</option>
-                        <option value="collector">Collector</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Sign In
-                </button>
-            </form>
-            
-            <div class="modal-footer">
-                <p>Don't have an account? <a href="#" id="showRegister">Create Account</a></p>
-            </div>
-            
-            <div class="demo-credentials">
-                <p><i class="fas fa-info-circle"></i> Demo Credentials:</p>
-                <p>👑 Admin: admin@wastewise.com / admin123</p>
-                <p>👤 Citizen: john@email.com / pass123</p>
-                <p>🚛 Collector: james@email.com / collect123</p>
-            </div>
-        </div>
+<!-- ==================== LOGIN MODAL ==================== -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <div class="modal-header"><i class="fas fa-recycle modal-logo"></i><h2>Welcome Back!</h2><p>Sign in to continue</p></div>
+        <form id="loginForm">
+            <div class="input-group"><i class="fas fa-envelope input-icon"></i><input type="email" id="loginEmail" placeholder="Email" required></div>
+            <div class="input-group"><i class="fas fa-lock input-icon"></i><input type="password" id="loginPassword" placeholder="Password" required></div>
+            <div class="input-group"><i class="fas fa-user-tag input-icon"></i><select id="loginType" required><option value="">Select type</option><option value="citizen">Citizen</option><option value="collector">Collector</option><option value="admin">Admin</option></select></div>
+            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        </form>
+        <div class="modal-footer"><p>No account? <a href="#" id="showRegister">Create Account</a></p></div>
+        <div class="demo-credentials"><p><i class="fas fa-info-circle"></i> Demo Credentials:</p><p>👑 Admin: rayhan@wastewise.com / rayhan123</p><p>👤 Citizen: anisha@email.com / anisha123</p><p>🚛 Collector: asif@email.com / asif123</p></div>
     </div>
+</div>
 
-    <!-- Register Modal -->
-    <div class="modal" id="registerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <i class="fas fa-recycle modal-logo"></i>
-                <h2>Create Account</h2>
-                <p>Join WasteWise community</p>
-            </div>
-            
-            <form id="registerForm">
-                <div class="input-group">
-                    <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="regName" placeholder="Full Name" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="regEmail" placeholder="Email address" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-phone input-icon"></i>
-                    <input type="tel" id="regPhone" placeholder="Phone number" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-map-marker-alt input-icon"></i>
-                    <input type="text" id="regAddress" placeholder="Address" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="regPassword" placeholder="Password" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="regConfirm" placeholder="Confirm Password" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-user-tag input-icon"></i>
-                    <select id="regType" required>
-                        <option value="">Register as</option>
-                        <option value="citizen">Citizen</option>
-                        <option value="collector">Collector</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                
-                <div class="input-group admin-secret hidden" id="adminSecretGroup">
-                    <i class="fas fa-key input-icon"></i>
-                    <input type="password" id="adminSecret" placeholder="Admin Secret Key">
-                </div>
-                
-                <div class="terms-group">
-                    <input type="checkbox" id="terms" required>
-                    <label for="terms">I agree to the Terms and Conditions</label>
-                </div>
-                
-                <button type="submit" class="btn btn-success btn-block">
-                    <i class="fas fa-user-plus"></i>
-                    Create Account
-                </button>
-            </form>
-            
-            <div class="modal-footer">
-                <p>Already have an account? <a href="#" id="showLogin">Back to Login</a></p>
-            </div>
-        </div>
+<!-- ==================== REGISTER MODAL ==================== -->
+<div class="modal" id="registerModal">
+    <div class="modal-content">
+        <div class="modal-header"><i class="fas fa-recycle modal-logo"></i><h2>Create Account</h2><p>Join WasteWise community</p></div>
+        <form id="registerForm">
+            <div class="input-group"><i class="fas fa-user input-icon"></i><input type="text" id="regName" placeholder="Full Name" required></div>
+            <div class="input-group"><i class="fas fa-envelope input-icon"></i><input type="email" id="regEmail" placeholder="Email" required></div>
+            <div class="input-group"><i class="fas fa-phone input-icon"></i><input type="tel" id="regPhone" placeholder="Phone" required></div>
+            <div class="input-group"><i class="fas fa-map-marker-alt input-icon"></i><input type="text" id="regAddress" placeholder="Address" required></div>
+            <div class="input-group"><i class="fas fa-lock input-icon"></i><input type="password" id="regPassword" placeholder="Password" required></div>
+            <div class="input-group"><i class="fas fa-lock input-icon"></i><input type="password" id="regConfirm" placeholder="Confirm Password" required></div>
+            <div class="input-group"><i class="fas fa-user-tag input-icon"></i><select id="regType" required><option value="">Register as</option><option value="citizen">Citizen</option><option value="collector">Collector</option><option value="admin">Admin</option></select></div>
+            <div class="input-group admin-secret hidden" id="adminSecretGroup"><i class="fas fa-key input-icon"></i><input type="password" id="adminSecret" placeholder="Admin Secret Key"></div>
+            <div class="terms-group"><input type="checkbox" id="terms" required><label>I agree to Terms & Conditions</label></div>
+            <button type="submit" class="btn btn-success btn-block"><i class="fas fa-user-plus"></i> Create Account</button>
+        </form>
+        <div class="modal-footer"><p>Already have an account? <a href="#" id="showLogin">Back to Login</a></p></div>
     </div>
+</div>
 
-    <!-- Main App -->
-    <div class="main-app hidden" id="mainApp">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="nav-brand">
-                <i class="fas fa-recycle brand-icon"></i>
-                <span class="brand-name">Waste<span class="brand-highlight">Wise</span></span>
-                <span class="city-badge">Khulna City</span>
-            </div>
-            
-            <div class="nav-menu" id="navMenu">
-                <a href="#" class="nav-link active" data-page="home"><i class="fas fa-home"></i> Home</a>
-                <a href="#" class="nav-link" data-page="map"><i class="fas fa-map"></i> Map</a>
-                <a href="#" class="nav-link" data-page="route"><i class="fas fa-route"></i> Route</a>
-                <a href="#" class="nav-link" data-page="recycle"><i class="fas fa-recycle"></i> Recycle</a>
-                <a href="#" class="nav-link" data-page="feedback"><i class="fas fa-comment"></i> Feedback</a>
-                <a href="#" class="nav-link" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
-                <a href="#" class="nav-link" data-page="admin"><i class="fas fa-cog"></i> Admin</a>
-            </div>
-            
-            <div class="nav-user">
-                <div class="user-profile" id="userProfile">
-                    <i class="fas fa-user-circle user-icon"></i>
-                    <div class="user-info">
-                        <span class="user-name" id="userName">Guest</span>
-                        <span class="user-type" id="userType">citizen</span>
-                    </div>
-                </div>
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-        </nav>
+<!-- ==================== MAIN APPLICATION ==================== -->
+<div class="main-app hidden" id="mainApp">
+    <nav class="navbar">
+        <div class="nav-brand"><i class="fas fa-recycle brand-icon"></i><span class="brand-name">Waste<span class="brand-highlight">Wise</span></span><span class="city-badge">Khulna City</span></div>
+        <div class="nav-menu" id="navMenu"></div>
+        <div class="nav-user"><div class="user-profile"><i class="fas fa-user-circle user-icon"></i><div class="user-info"><span class="user-name" id="userName">Guest</span><span class="user-type" id="userType">citizen</span></div></div><button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button></div>
+    </nav>
+    <div class="mobile-nav"><div class="mobile-nav-header"><i class="fas fa-recycle"></i><span>WasteWise</span></div><button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button></div>
+    <div class="mobile-menu hidden" id="mobileMenu"></div>
+    <main class="content-area" id="contentArea"></main>
+</div>
 
-        <!-- Mobile Nav -->
-        <div class="mobile-nav">
-            <div class="mobile-nav-header">
-                <i class="fas fa-recycle"></i>
-                <span>WasteWise</span>
+<!-- ==================== AI SCANNER MODAL ==================== -->
+<div class="modal" id="scannerModal">
+    <div class="modal-content" style="max-width:600px">
+        <div class="modal-header"><i class="fas fa-brain modal-logo"></i><h2>YOLO + OpenCV AI Scanner</h2><p>Real-time waste classification with artificial intelligence</p></div>
+        <div style="text-align:center">
+            <video id="video" autoplay playsinline style="width:100%; max-height:280px; background:#1a1a2e; border-radius:10px"></video>
+            <canvas id="canvas" style="display:none"></canvas>
+            <div style="margin-top:1rem; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+                <button class="btn btn-primary" id="captureBtn"><i class="fas fa-camera"></i> Capture & Scan</button>
+                <button class="btn btn-info" id="uploadBtn"><i class="fas fa-upload"></i> Upload Image</button>
+                <input type="file" id="fileInput" accept="image/*" style="display:none">
             </div>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div id="scanResult" style="margin-top:1rem; padding:1rem; border-radius:10px; display:none; background:#f8f9fa"></div>
         </div>
-
-        <div class="mobile-menu hidden" id="mobileMenu">
-            <a href="#" class="mobile-link" data-page="home"><i class="fas fa-home"></i> Home</a>
-            <a href="#" class="mobile-link" data-page="map"><i class="fas fa-map"></i> Map</a>
-            <a href="#" class="mobile-link" data-page="route"><i class="fas fa-route"></i> Route</a>
-            <a href="#" class="mobile-link" data-page="recycle"><i class="fas fa-recycle"></i> Recycle</a>
-            <a href="#" class="mobile-link" data-page="feedback"><i class="fas fa-comment"></i> Feedback</a>
-            <a href="#" class="mobile-link" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
-            <a href="#" class="mobile-link" data-page="admin"><i class="fas fa-cog"></i> Admin</a>
-        </div>
-
-        <!-- Main Content -->
-        <main class="content-area" id="contentArea">
-            <!-- Content will be loaded dynamically -->
-        </main>
+        <div class="modal-footer"><button class="btn btn-danger" id="closeScannerBtn">Close</button></div>
     </div>
+</div>
 
-    <!-- Scripts -->
-    <script src="routes.js"></script>
-    <script src="map.js"></script>
-    <script src="script.js"></script>
+<!-- ==================== SMART BIN MODAL ==================== -->
+<div class="modal" id="binModal">
+    <div class="modal-content" style="max-width:500px">
+        <div class="modal-header"><i class="fas fa-trash-alt modal-logo"></i><h2 id="binModalTitle">Add Smart Bin</h2><p><i class="fas fa-map-marker-alt"></i> Click on map to select location</p></div>
+        <form id="binForm">
+            <div class="input-group"><i class="fas fa-tag input-icon"></i><input type="text" id="binName" placeholder="Bin Name" required></div>
+            <div class="input-group"><i class="fas fa-map-marker-alt input-icon"></i><input type="text" id="binLocation" placeholder="Location Name" required></div>
+            <div class="input-group"><i class="fas fa-location-dot input-icon"></i><input type="number" id="binLat" placeholder="Latitude" step="any" required></div>
+            <div class="input-group"><i class="fas fa-location-dot input-icon"></i><input type="number" id="binLng" placeholder="Longitude" step="any" required></div>
+            <div class="input-group"><i class="fas fa-chart-line input-icon"></i><input type="number" id="binFillLevel" placeholder="Fill Level (0-100)" value="0" min="0" max="100"></div>
+            <select id="binType" class="form-control" style="margin-bottom:1rem"><option value="Mixed">Mixed Waste</option><option value="Recyclable">Recyclable</option><option value="Organic">Organic</option><option value="Plastic">Plastic</option></select>
+            <button type="submit" class="btn btn-success btn-block"><i class="fas fa-save"></i> Save Bin</button>
+        </form>
+        <div class="modal-footer"><button class="btn btn-secondary" id="closeBinBtn">Cancel</button></div>
+    </div>
+</div>
+
+<!-- ==================== CSV DATABASE MODAL (ADMIN ONLY) ==================== -->
+<div class="modal" id="csvModal">
+    <div class="modal-content" style="max-width:600px">
+        <div class="modal-header"><i class="fas fa-database modal-logo"></i><h2>CSV Database Manager</h2><p>Export and Import data as CSV files</p></div>
+        <div style="margin-bottom:1.5rem"><h3><i class="fas fa-download"></i> Export Data</h3><div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px"><button class="btn btn-primary btn-sm" onclick="exportUsersCSV()"><i class="fas fa-users"></i> Users</button><button class="btn btn-success btn-sm" onclick="exportBinsCSV()"><i class="fas fa-trash-alt"></i> Bins</button><button class="btn btn-info btn-sm" onclick="exportReportsCSV()"><i class="fas fa-file-alt"></i> Reports</button><button class="btn btn-warning btn-sm" onclick="exportTasksCSV()"><i class="fas fa-tasks"></i> Tasks</button><button class="btn btn-danger btn-sm" onclick="exportFinesCSV()"><i class="fas fa-gavel"></i> Fines</button><button class="btn btn-secondary btn-sm" onclick="exportAllCSV()"><i class="fas fa-database"></i> Export All</button></div></div>
+        <div><h3><i class="fas fa-upload"></i> Import Data</h3><div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center"><select id="csvImportTable" class="form-control" style="width:auto"><option value="users">Users</option><option value="smart_bins">Smart Bins</option><option value="reports">Reports</option><option value="tasks">Tasks</option><option value="fines">Fines</option></select><input type="file" id="csvImportFile" accept=".csv"><button class="btn btn-success btn-sm" onclick="importCSVData()"><i class="fas fa-upload"></i> Import</button></div></div>
+        <div class="modal-footer"><button class="btn btn-secondary" id="closeCsvBtn">Close</button></div>
+    </div>
+</div>
+
+<script src="routes.js"></script>
+<script src="map.js"></script>
+<script src="csv-db.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
