@@ -1,134 +1,17 @@
-// Map Management
-let map = null;
-let markers = [];
-let routeLayer = null;
-
-// Initialize Map
-function initMap(containerId = 'map', center = [22.8456, 89.5400], zoom = 12) {
-    if (!map) {
-        map = L.map(containerId).setView(center, zoom);
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        }).addTo(map);
-    }
-    return map;
+// map.js - Complete Leaflet Map Functions
+let map=null,markers=[],currentPositionMarker=null,watchId=null,selectedLat=null,selectedLng=null,tempMarker=null;
+function initMap(cid,center=[22.8456,89.5400],zoom=13){
+    let c=document.getElementById(cid);if(!c)return null;if(map){try{map.remove()}catch(e){}map=null}
+    try{map=L.map(cid).setView(center,zoom);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);if(cid==='adminBinMap'){map.on('click',onMapClick)}return map}catch(e){return null}
 }
-
-// Add Markers for All Locations
-function addLocationMarkers() {
-    clearMarkers();
-    
-    KHULNA_LOCATIONS.forEach(loc => {
-        const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-        
-        // Customize marker icon based on location type
-        const icon = L.divIcon({
-            className: `marker-${loc.type}`,
-            html: `<i class="fas fa-map-marker-alt" style="color: ${getMarkerColor(loc.type)}; font-size: 24px;"></i>`,
-            iconSize: [24, 24],
-            iconAnchor: [12, 24]
-        });
-        
-        marker.setIcon(icon);
-        
-        marker.bindPopup(`
-            <b>${loc.name}</b><br>
-            Type: ${loc.type}<br>
-            <button onclick="showLocationDetails('${loc.name}')" class="popup-btn">View Details</button>
-        `);
-        
-        markers.push(marker);
-    });
-}
-
-// Get Marker Color based on type
-function getMarkerColor(type) {
-    switch(type) {
-        case 'educational': return '#1e5e80';
-        case 'medical': return '#28a745';
-        case 'industrial': return '#dc3545';
-        default: return '#ffc107';
-    }
-}
-
-// Clear all markers
-function clearMarkers() {
-    markers.forEach(marker => marker.remove());
-    markers = [];
-}
-
-// Draw Route on Map
-function drawRoute(path, color = '#1e5e80') {
-    // Clear previous route
-    if (routeLayer) {
-        map.removeLayer(routeLayer);
-    }
-
-    // Get coordinates for path
-    const points = path.map(locName => {
-        const loc = KHULNA_LOCATIONS.find(l => l.name === locName);
-        return [loc.lat, loc.lng];
-    });
-
-    // Create polyline
-    routeLayer = L.polyline(points, {
-        color: color,
-        weight: 5,
-        opacity: 0.7,
-        dashArray: '10, 10'
-    }).addTo(map);
-
-    // Fit map to route bounds
-    map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-
-    // Add markers for start and end
-    if (points.length > 0) {
-        L.marker(points[0], {
-            icon: L.divIcon({
-                className: 'start-marker',
-                html: '<i class="fas fa-play-circle" style="color: #28a745; font-size: 30px;"></i>',
-                iconSize: [30, 30]
-            })
-        }).addTo(map).bindPopup('Start Point');
-
-        L.marker(points[points.length - 1], {
-            icon: L.divIcon({
-                className: 'end-marker',
-                html: '<i class="fas fa-stop-circle" style="color: #dc3545; font-size: 30px;"></i>',
-                iconSize: [30, 30]
-            })
-        }).addTo(map).bindPopup('End Point');
-    }
-}
-
-// Find and display route between two locations
-function findAndDisplayRoute(from, to) {
-    const result = routeGraph.findShortestPath(from, to);
-    
-    if (result) {
-        drawRoute(result.path);
-        return result;
-    } else {
-        showNotification('No route found between these locations', 'error');
-        return null;
-    }
-}
-
-// Show location details
-function showLocationDetails(locationName) {
-    const loc = KHULNA_LOCATIONS.find(l => l.name === locationName);
-    if (loc) {
-        showNotification(`
-            📍 ${loc.name}\n
-            Type: ${loc.type}\n
-            Coordinates: ${loc.lat}, ${loc.lng}
-        `, 'info');
-    }
-}
-
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { initMap, addLocationMarkers, findAndDisplayRoute, drawRoute };
-}
+function onMapClick(e){selectedLat=e.latlng.lat;selectedLng=e.latlng.lng;if(tempMarker)tempMarker.remove();tempMarker=L.marker([selectedLat,selectedLng]).addTo(map);L.popup().setLatLng(e.latlng).setContent(`<div style="text-align:center;min-width:200px"><b>📍 Selected Location</b><hr><small>Lat: <strong>${selectedLat.toFixed(6)}</strong></small><br><small>Lng: <strong>${selectedLng.toFixed(6)}</strong></small><hr><button onclick="useSelectedLocation()" class="btn btn-primary" style="margin-top:5px;padding:5px 12px;width:100%">Use This Location</button></div>`).openOn(map);if(window.showNotification)window.showNotification('Click "Use This Location" to set coordinates','info')}
+function useSelectedLocation(){if(selectedLat!==null&&selectedLng!==null){document.getElementById('binLat').value=selectedLat.toFixed(6);document.getElementById('binLng').value=selectedLng.toFixed(6);if(window.showNotification)window.showNotification('Location set!','success');if(tempMarker){tempMarker.remove();tempMarker=L.marker([selectedLat,selectedLng],{icon:L.divIcon({html:'<div style="background:#28a745;width:20px;height:20px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 2px #28a745"></div>',iconSize:[20,20]})}).addTo(map)}}else{if(window.showNotification)window.showNotification('Click on map first','warning')}}
+function addBinMarkers(){if(!map)return;clearMarkers();let bins=db.selectAll('smart_bins');bins.forEach(b=>{let color=b.fill_level>=85?'#dc3545':(b.fill_level>=70?'#ffc107':'#28a745');let icon=L.divIcon({html:`<div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 5px rgba(0,0,0,0.2)"><i class="fas ${b.is_iot?'fa-microchip':'fa-trash'}" style="color:white;font-size:14px"></i></div>`,iconSize:[32,32]});let m=L.marker([b.lat,b.lng],{icon}).addTo(map);let iot=b.is_iot?'<br><span class="badge badge-info">ESP32 Live</span>':'';m.bindPopup(`<b>${b.name}</b><br>📍 ${b.location}<br>📊 Fill: ${b.fill_level}%<br>⚠️ Status: ${b.status}<br>🗑️ Type: ${b.type}${iot}`);markers.push(m)})}
+function addLocationMarkers(){if(!map)return;KHULNA_LOCATIONS.forEach(l=>{let m=L.marker([l.lat,l.lng]).addTo(map);m.bindPopup(`<b>${l.name}</b><br>${l.address}`);markers.push(m)})}
+function clearMarkers(){markers.forEach(m=>{try{m.remove()}catch(e){}});markers=[]}
+function updateCurrentPosition(lat,lng){if(!map)return;if(currentPositionMarker)currentPositionMarker.setLatLng([lat,lng]);else{currentPositionMarker=L.marker([lat,lng]).addTo(map);currentPositionMarker.bindPopup('<b>Your Location</b>').openPopup()}map.setView([lat,lng],15)}
+function startGPSTracking(cb){if(!navigator.geolocation){if(window.showNotification)window.showNotification('GPS not supported','error');return false}if(watchId)stopGPSTracking();watchId=navigator.geolocation.watchPosition(p=>{updateCurrentPosition(p.coords.latitude,p.coords.longitude);if(cb)cb(p.coords.latitude,p.coords.longitude)},err=>{if(window.showNotification)window.showNotification('GPS Error','error')},{enableHighAccuracy:true,timeout:10000});return true}
+function stopGPSTracking(){if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null}if(currentPositionMarker){currentPositionMarker.remove();currentPositionMarker=null}}
+function getDistance(lat1,lng1,lat2,lng2){const R=6371;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*(2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)))}
+function findNearbyBins(lat,lng){if(!lat||!lng)return[];let bins=db.selectAll('smart_bins');return bins.filter(b=>getDistance(lat,lng,b.lat,b.lng)<=2)}
+window.useSelectedLocation=useSelectedLocation;
